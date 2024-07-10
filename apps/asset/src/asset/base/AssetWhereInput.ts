@@ -15,10 +15,11 @@ import { StringFilter } from "../../util/StringFilter";
 import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";
 import { StringNullableFilter } from "../../util/StringNullableFilter";
-import { AssetListRelationFilter } from "../../asset/base/AssetListRelationFilter";
+import { JsonFilter } from "../../util/JsonFilter";
+import { UserListRelationFilter } from "../../user/base/UserListRelationFilter";
 
 @InputType()
-class UserWhereInput {
+class AssetWhereInput {
   @ApiProperty({
     required: false,
     type: StringFilter,
@@ -39,7 +40,18 @@ class UserWhereInput {
   @Field(() => StringNullableFilter, {
     nullable: true,
   })
-  firstName?: StringNullableFilter;
+  brand?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: JsonFilter,
+  })
+  @Type(() => JsonFilter)
+  @IsOptional()
+  @Field(() => JsonFilter, {
+    nullable: true,
+  })
+  technicalMetadata?: JsonFilter;
 
   @ApiProperty({
     required: false,
@@ -50,41 +62,19 @@ class UserWhereInput {
   @Field(() => StringNullableFilter, {
     nullable: true,
   })
-  lastName?: StringNullableFilter;
+  name?: StringNullableFilter;
 
   @ApiProperty({
     required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  @Field(() => StringFilter, {
-    nullable: true,
-  })
-  username?: StringFilter;
-
-  @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
-  })
-  @Type(() => StringNullableFilter)
-  @IsOptional()
-  @Field(() => StringNullableFilter, {
-    nullable: true,
-  })
-  email?: StringNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    type: () => AssetListRelationFilter,
+    type: () => UserListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => AssetListRelationFilter)
+  @Type(() => UserListRelationFilter)
   @IsOptional()
-  @Field(() => AssetListRelationFilter, {
+  @Field(() => UserListRelationFilter, {
     nullable: true,
   })
-  assets?: AssetListRelationFilter;
+  user?: UserListRelationFilter;
 }
 
-export { UserWhereInput as UserWhereInput };
+export { AssetWhereInput as AssetWhereInput };
