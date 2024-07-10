@@ -9,78 +9,58 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from "@nestjs/graphql";
+import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsString,
+  IsDate,
   MaxLength,
   IsOptional,
   ValidateNested,
 } from "class-validator";
+import { Type } from "class-transformer";
 import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
-import { AssetUpdateManyWithoutUsersInput } from "./AssetUpdateManyWithoutUsersInput";
-import { Type } from "class-transformer";
+import { JsonValue } from "type-fest";
+import { User } from "../../user/base/User";
 
-@InputType()
-class UserUpdateInput {
+@ObjectType()
+class Asset {
   @ApiProperty({
-    required: false,
+    required: true,
     type: String,
   })
   @IsString()
-  @MaxLength(256)
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  firstName?: string | null;
+  @Field(() => String)
+  id!: string;
 
   @ApiProperty({
-    required: false,
-    type: String,
+    required: true,
   })
-  @IsString()
-  @MaxLength(256)
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  lastName?: string | null;
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
 
   @ApiProperty({
-    required: false,
-    type: String,
+    required: true,
   })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  username?: string;
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  email?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  password?: string;
+  brand!: string | null;
 
   @ApiProperty({
     required: false,
@@ -90,19 +70,28 @@ class UserUpdateInput {
   @Field(() => GraphQLJSON, {
     nullable: true,
   })
-  roles?: InputJsonValue;
+  technicalMetadata!: JsonValue;
 
   @ApiProperty({
     required: false,
-    type: () => AssetUpdateManyWithoutUsersInput,
+    type: String,
   })
-  @ValidateNested()
-  @Type(() => AssetUpdateManyWithoutUsersInput)
+  @IsString()
+  @MaxLength(1000)
   @IsOptional()
-  @Field(() => AssetUpdateManyWithoutUsersInput, {
+  @Field(() => String, {
     nullable: true,
   })
-  assets?: AssetUpdateManyWithoutUsersInput;
+  name!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => [User],
+  })
+  @ValidateNested()
+  @Type(() => User)
+  @IsOptional()
+  user?: Array<User>;
 }
 
-export { UserUpdateInput as UserUpdateInput };
+export { Asset as Asset };

@@ -19,32 +19,32 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { User } from "./User";
-import { UserCountArgs } from "./UserCountArgs";
-import { UserFindManyArgs } from "./UserFindManyArgs";
-import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
-import { CreateUserArgs } from "./CreateUserArgs";
-import { UpdateUserArgs } from "./UpdateUserArgs";
-import { DeleteUserArgs } from "./DeleteUserArgs";
-import { AssetFindManyArgs } from "../../asset/base/AssetFindManyArgs";
-import { Asset } from "../../asset/base/Asset";
-import { UserService } from "../user.service";
+import { Asset } from "./Asset";
+import { AssetCountArgs } from "./AssetCountArgs";
+import { AssetFindManyArgs } from "./AssetFindManyArgs";
+import { AssetFindUniqueArgs } from "./AssetFindUniqueArgs";
+import { CreateAssetArgs } from "./CreateAssetArgs";
+import { UpdateAssetArgs } from "./UpdateAssetArgs";
+import { DeleteAssetArgs } from "./DeleteAssetArgs";
+import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
+import { User } from "../../user/base/User";
+import { AssetService } from "../asset.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
-@graphql.Resolver(() => User)
-export class UserResolverBase {
+@graphql.Resolver(() => Asset)
+export class AssetResolverBase {
   constructor(
-    protected readonly service: UserService,
+    protected readonly service: AssetService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @graphql.Query(() => MetaQueryPayload)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "read",
     possession: "any",
   })
-  async _usersMeta(
-    @graphql.Args() args: UserCountArgs
+  async _assetsMeta(
+    @graphql.Args() args: AssetCountArgs
   ): Promise<MetaQueryPayload> {
     const result = await this.service.count(args);
     return {
@@ -53,25 +53,27 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.Query(() => [User])
+  @graphql.Query(() => [Asset])
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "read",
     possession: "any",
   })
-  async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
-    return this.service.users(args);
+  async assets(@graphql.Args() args: AssetFindManyArgs): Promise<Asset[]> {
+    return this.service.assets(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.Query(() => User, { nullable: true })
+  @graphql.Query(() => Asset, { nullable: true })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "read",
     possession: "own",
   })
-  async user(@graphql.Args() args: UserFindUniqueArgs): Promise<User | null> {
-    const result = await this.service.user(args);
+  async asset(
+    @graphql.Args() args: AssetFindUniqueArgs
+  ): Promise<Asset | null> {
+    const result = await this.service.asset(args);
     if (result === null) {
       return null;
     }
@@ -79,29 +81,31 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Asset)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "create",
     possession: "any",
   })
-  async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
-    return await this.service.createUser({
+  async createAsset(@graphql.Args() args: CreateAssetArgs): Promise<Asset> {
+    return await this.service.createAsset({
       ...args,
       data: args.data,
     });
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Asset)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "update",
     possession: "any",
   })
-  async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
+  async updateAsset(
+    @graphql.Args() args: UpdateAssetArgs
+  ): Promise<Asset | null> {
     try {
-      return await this.service.updateUser({
+      return await this.service.updateAsset({
         ...args,
         data: args.data,
       });
@@ -115,15 +119,17 @@ export class UserResolverBase {
     }
   }
 
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Asset)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "delete",
     possession: "any",
   })
-  async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
+  async deleteAsset(
+    @graphql.Args() args: DeleteAssetArgs
+  ): Promise<Asset | null> {
     try {
-      return await this.service.deleteUser(args);
+      return await this.service.deleteAsset(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -135,17 +141,17 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => [Asset], { name: "assets" })
+  @graphql.ResolveField(() => [User], { name: "user" })
   @nestAccessControl.UseRoles({
-    resource: "Asset",
+    resource: "User",
     action: "read",
     possession: "any",
   })
-  async findAssets(
-    @graphql.Parent() parent: User,
-    @graphql.Args() args: AssetFindManyArgs
-  ): Promise<Asset[]> {
-    const results = await this.service.findAssets(parent.id, args);
+  async findUser(
+    @graphql.Parent() parent: Asset,
+    @graphql.Args() args: UserFindManyArgs
+  ): Promise<User[]> {
+    const results = await this.service.findUser(parent.id, args);
 
     if (!results) {
       return [];

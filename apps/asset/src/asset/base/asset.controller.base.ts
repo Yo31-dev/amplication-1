@@ -18,107 +18,101 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import * as nestAccessControl from "nest-access-control";
 import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
-import { UserService } from "../user.service";
+import { AssetService } from "../asset.service";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
-import { UserCreateInput } from "./UserCreateInput";
-import { User } from "./User";
-import { UserFindManyArgs } from "./UserFindManyArgs";
-import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-import { UserUpdateInput } from "./UserUpdateInput";
-import { AssetFindManyArgs } from "../../asset/base/AssetFindManyArgs";
-import { Asset } from "../../asset/base/Asset";
-import { AssetWhereUniqueInput } from "../../asset/base/AssetWhereUniqueInput";
+import { AssetCreateInput } from "./AssetCreateInput";
+import { Asset } from "./Asset";
+import { AssetFindManyArgs } from "./AssetFindManyArgs";
+import { AssetWhereUniqueInput } from "./AssetWhereUniqueInput";
+import { AssetUpdateInput } from "./AssetUpdateInput";
+import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
+import { User } from "../../user/base/User";
+import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
 
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
-export class UserControllerBase {
+export class AssetControllerBase {
   constructor(
-    protected readonly service: UserService,
+    protected readonly service: AssetService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
   @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
-  @swagger.ApiCreatedResponse({ type: User })
+  @swagger.ApiCreatedResponse({ type: Asset })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "create",
     possession: "any",
   })
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async createUser(@common.Body() data: UserCreateInput): Promise<User> {
-    return await this.service.createUser({
+  async createAsset(@common.Body() data: AssetCreateInput): Promise<Asset> {
+    return await this.service.createAsset({
       data: data,
       select: {
         id: true,
         createdAt: true,
         updatedAt: true,
-        firstName: true,
-        lastName: true,
-        username: true,
-        email: true,
-        roles: true,
+        brand: true,
+        technicalMetadata: true,
+        name: true,
       },
     });
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
-  @swagger.ApiOkResponse({ type: [User] })
-  @ApiNestedQuery(UserFindManyArgs)
+  @swagger.ApiOkResponse({ type: [Asset] })
+  @ApiNestedQuery(AssetFindManyArgs)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "read",
     possession: "any",
   })
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async users(@common.Req() request: Request): Promise<User[]> {
-    const args = plainToClass(UserFindManyArgs, request.query);
-    return this.service.users({
+  async assets(@common.Req() request: Request): Promise<Asset[]> {
+    const args = plainToClass(AssetFindManyArgs, request.query);
+    return this.service.assets({
       ...args,
       select: {
         id: true,
         createdAt: true,
         updatedAt: true,
-        firstName: true,
-        lastName: true,
-        username: true,
-        email: true,
-        roles: true,
+        brand: true,
+        technicalMetadata: true,
+        name: true,
       },
     });
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
-  @swagger.ApiOkResponse({ type: User })
+  @swagger.ApiOkResponse({ type: Asset })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "read",
     possession: "own",
   })
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async user(
-    @common.Param() params: UserWhereUniqueInput
-  ): Promise<User | null> {
-    const result = await this.service.user({
+  async asset(
+    @common.Param() params: AssetWhereUniqueInput
+  ): Promise<Asset | null> {
+    const result = await this.service.asset({
       where: params,
       select: {
         id: true,
         createdAt: true,
         updatedAt: true,
-        firstName: true,
-        lastName: true,
-        username: true,
-        email: true,
-        roles: true,
+        brand: true,
+        technicalMetadata: true,
+        name: true,
       },
     });
     if (result === null) {
@@ -131,33 +125,31 @@ export class UserControllerBase {
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
-  @swagger.ApiOkResponse({ type: User })
+  @swagger.ApiOkResponse({ type: Asset })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "update",
     possession: "any",
   })
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async updateUser(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() data: UserUpdateInput
-  ): Promise<User | null> {
+  async updateAsset(
+    @common.Param() params: AssetWhereUniqueInput,
+    @common.Body() data: AssetUpdateInput
+  ): Promise<Asset | null> {
     try {
-      return await this.service.updateUser({
+      return await this.service.updateAsset({
         where: params,
         data: data,
         select: {
           id: true,
           createdAt: true,
           updatedAt: true,
-          firstName: true,
-          lastName: true,
-          username: true,
-          email: true,
-          roles: true,
+          brand: true,
+          technicalMetadata: true,
+          name: true,
         },
       });
     } catch (error) {
@@ -171,31 +163,29 @@ export class UserControllerBase {
   }
 
   @common.Delete("/:id")
-  @swagger.ApiOkResponse({ type: User })
+  @swagger.ApiOkResponse({ type: Asset })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "delete",
     possession: "any",
   })
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async deleteUser(
-    @common.Param() params: UserWhereUniqueInput
-  ): Promise<User | null> {
+  async deleteAsset(
+    @common.Param() params: AssetWhereUniqueInput
+  ): Promise<Asset | null> {
     try {
-      return await this.service.deleteUser({
+      return await this.service.deleteAsset({
         where: params,
         select: {
           id: true,
           createdAt: true,
           updatedAt: true,
-          firstName: true,
-          lastName: true,
-          username: true,
-          email: true,
-          roles: true,
+          brand: true,
+          technicalMetadata: true,
+          name: true,
         },
       });
     } catch (error) {
@@ -209,27 +199,29 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.Get("/:id/assets")
-  @ApiNestedQuery(AssetFindManyArgs)
+  @common.Get("/:id/user")
+  @ApiNestedQuery(UserFindManyArgs)
   @nestAccessControl.UseRoles({
-    resource: "Asset",
+    resource: "User",
     action: "read",
     possession: "any",
   })
-  async findAssets(
+  async findUser(
     @common.Req() request: Request,
-    @common.Param() params: UserWhereUniqueInput
-  ): Promise<Asset[]> {
-    const query = plainToClass(AssetFindManyArgs, request.query);
-    const results = await this.service.findAssets(params.id, {
+    @common.Param() params: AssetWhereUniqueInput
+  ): Promise<User[]> {
+    const query = plainToClass(UserFindManyArgs, request.query);
+    const results = await this.service.findUser(params.id, {
       ...query,
       select: {
         id: true,
         createdAt: true,
         updatedAt: true,
-        brand: true,
-        technicalMetadata: true,
-        name: true,
+        firstName: true,
+        lastName: true,
+        username: true,
+        email: true,
+        roles: true,
       },
     });
     if (results === null) {
@@ -240,66 +232,66 @@ export class UserControllerBase {
     return results;
   }
 
-  @common.Post("/:id/assets")
+  @common.Post("/:id/user")
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "update",
     possession: "any",
   })
-  async connectAssets(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: AssetWhereUniqueInput[]
+  async connectUser(
+    @common.Param() params: AssetWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
   ): Promise<void> {
     const data = {
-      assets: {
+      user: {
         connect: body,
       },
     };
-    await this.service.updateUser({
+    await this.service.updateAsset({
       where: params,
       data,
       select: { id: true },
     });
   }
 
-  @common.Patch("/:id/assets")
+  @common.Patch("/:id/user")
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "update",
     possession: "any",
   })
-  async updateAssets(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: AssetWhereUniqueInput[]
+  async updateUser(
+    @common.Param() params: AssetWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
   ): Promise<void> {
     const data = {
-      assets: {
+      user: {
         set: body,
       },
     };
-    await this.service.updateUser({
+    await this.service.updateAsset({
       where: params,
       data,
       select: { id: true },
     });
   }
 
-  @common.Delete("/:id/assets")
+  @common.Delete("/:id/user")
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Asset",
     action: "update",
     possession: "any",
   })
-  async disconnectAssets(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: AssetWhereUniqueInput[]
+  async disconnectUser(
+    @common.Param() params: AssetWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
   ): Promise<void> {
     const data = {
-      assets: {
+      user: {
         disconnect: body,
       },
     };
-    await this.service.updateUser({
+    await this.service.updateAsset({
       where: params,
       data,
       select: { id: true },

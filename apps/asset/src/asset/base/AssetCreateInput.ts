@@ -20,80 +20,56 @@ import {
 import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
-import { AssetCreateNestedManyWithoutUsersInput } from "./AssetCreateNestedManyWithoutUsersInput";
+import { UserCreateNestedManyWithoutAssetsInput } from "./UserCreateNestedManyWithoutAssetsInput";
 import { Type } from "class-transformer";
 
 @InputType()
-class UserCreateInput {
+class AssetCreateInput {
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
-  @MaxLength(256)
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  firstName?: string | null;
+  brand?: string | null;
 
   @ApiProperty({
     required: false,
-    type: String,
-  })
-  @IsString()
-  @MaxLength(256)
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  lastName?: string | null;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  username!: string;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  email?: string | null;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  password!: string;
-
-  @ApiProperty({
-    required: true,
   })
   @IsJSONValue()
-  @Field(() => GraphQLJSON)
-  roles!: InputJsonValue;
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  technicalMetadata?: InputJsonValue;
 
   @ApiProperty({
     required: false,
-    type: () => AssetCreateNestedManyWithoutUsersInput,
+    type: String,
   })
-  @ValidateNested()
-  @Type(() => AssetCreateNestedManyWithoutUsersInput)
+  @IsString()
+  @MaxLength(1000)
   @IsOptional()
-  @Field(() => AssetCreateNestedManyWithoutUsersInput, {
+  @Field(() => String, {
     nullable: true,
   })
-  assets?: AssetCreateNestedManyWithoutUsersInput;
+  name?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => UserCreateNestedManyWithoutAssetsInput,
+  })
+  @ValidateNested()
+  @Type(() => UserCreateNestedManyWithoutAssetsInput)
+  @IsOptional()
+  @Field(() => UserCreateNestedManyWithoutAssetsInput, {
+    nullable: true,
+  })
+  user?: UserCreateNestedManyWithoutAssetsInput;
 }
 
-export { UserCreateInput as UserCreateInput };
+export { AssetCreateInput as AssetCreateInput };
